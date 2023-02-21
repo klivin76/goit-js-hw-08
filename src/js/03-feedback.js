@@ -8,7 +8,7 @@ const refs = {
 
 const STORAGE_KEY = 'feedback-form-state';
 const formData = {};
-const saveData = localStorage.getItem(STORAGE_KEY, JSON.stringify(formData));
+const saveData = localStorage.getItem(STORAGE_KEY);
 const parseData = JSON.parse(saveData);
 
 
@@ -33,9 +33,8 @@ localStorage.removeItem(STORAGE_KEY);
 };
 
 function populateTexterea() {    
-   const savedMessage = localStorage.getItem(STORAGE_KEY);
-   if (savedMessage) {
-    refs.form.email.value = parseData.email;
-    refs.form.message.value = parseData.message;      
-};
-};
+    const formKeys = Object.keys(parseData);
+    formKeys.map(element => {
+        document.querySelector(`[name='${element}']`).value = parseData[element];
+});
+}
