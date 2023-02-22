@@ -1,40 +1,42 @@
-import  throttle from 'lodash.throttle';
-
-const refs = {
-    form: document.querySelector(".feedback-form"),
-    email: document.querySelector(".feedback-form input"),
-    textarea: document.querySelector(".feedback-form textarea"),
-};
+import throttle from 'lodash.throttle';
 
 const STORAGE_KEY = 'feedback-form-state';
-const formData = {};
-const saveData = localStorage.getItem(STORAGE_KEY);
-const parseData = JSON.parse(saveData);
+const formData = { email: '', message: '' };
+const savedDataObject = JSON.parse(localStorage.getItem(STORAGE_KEY));
 
-
-refs.form.addEventListener('submit', onFormSubmit);
-refs.form.addEventListener('input', throttle(onTextariaInput, 500));
-
-refs.form.addEventListener('input', e => {
-formData[e.target.name] = e.target.value;
-});
-
-populateTexterea();
-
-function onTextariaInput(e) {
-    return localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
- };
-
-function onFormSubmit(e) {
-e.preventDefault();
-console.log(formData);
-e.currentTarget.reset();
-localStorage.removeItem(STORAGE_KEY);
+const refs = {  
+    form: document.querySelector('.feedback-form'),  
+    input: document.querySelector('input[name=email]'),  
+    textarea: document.querySelector('textarea[name=message]'),
 };
 
-function populateTexterea() {    
-    const formKeys = Object.keys(parseData);
-    formKeys.map(element => {
-        document.querySelector(`[name='${element}']`).value = parseData[element];
-});
-}
+    reloadPage();
+
+    refs.form.addEventListener('input', throttle(onInput, 500));
+    refs.form.addEventListener('submit', onFormSubmit);
+
+function onInput(evt) {  
+    formData.email = refs.input.value.trim();  
+    formData.message = refs.textarea.value.trim();  
+    return localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+};  
+    
+    function reloadPage() {   
+
+        if (savedDataObject) {      
+            refs.input.value = savedDataObject.email || '';      
+            refs.textarea.value = savedDataObject.message || '';      
+            return reloadPage;    
+        };  
+    };
+
+function onFormSubmit(evt) {  
+    evt.preventDefault();  
+
+    if (refs.input.value === '' || refs.textarea.value === '') {    
+        return alert('Please fill in all the fields!');  
+    }; 
+        console.log(savedDataObject);  
+        evt.currentTarget.reset();  
+        localStorage.removeItem(STORAGE_KEY); 
+     };
